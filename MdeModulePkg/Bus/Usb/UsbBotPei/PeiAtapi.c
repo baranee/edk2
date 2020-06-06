@@ -383,9 +383,9 @@ PeiUsbRead10 (
 {
   ATAPI_PACKET_COMMAND  Packet;
   ATAPI_READ10_CMD      *Read10Packet;
-  UINT16                MaxBlock;
-  UINT16                BlocksRemaining;
-  UINT16                SectorCount;
+  UINT32                MaxBlock;
+  UINT32                BlocksRemaining;
+  UINT32                SectorCount;
   UINT32                Lba32;
   UINT32                BlockSize;
   UINT32                ByteCount;
@@ -403,8 +403,8 @@ PeiUsbRead10 (
 
   BlockSize       = (UINT32) PeiBotDevice->Media.BlockSize;
 
-  MaxBlock        = (UINT16) (65535 / BlockSize);
-  BlocksRemaining = (UINT16) NumberOfBlocks;
+  MaxBlock        = (UINT32) (65535 / BlockSize);
+  BlocksRemaining = (UINT32) NumberOfBlocks;
 
   Status          = EFI_SUCCESS;
   while (BlocksRemaining > 0) {
@@ -435,8 +435,8 @@ PeiUsbRead10 (
     // TranLen0 ~ TranLen1 specify the transfer length in block unit.
     // TranLen0 is MSB, TranLen is LSB
     //
-    Read10Packet->TranLen1  = (UINT8) (SectorCount & 0xff);
-    Read10Packet->TranLen0  = (UINT8) (SectorCount >> 8);
+    Read10Packet->TranLen1  = (UINT8) (((UINT16)SectorCount) & 0xff);
+    Read10Packet->TranLen0  = (UINT8) (((UINT16)SectorCount) >> 8);
 
     ByteCount               = SectorCount * BlockSize;
 
@@ -460,9 +460,9 @@ PeiUsbRead10 (
       return Status;
     }
 
-    Lba32 += SectorCount;
-    PtrBuffer       = (UINT8 *) PtrBuffer + SectorCount * BlockSize;
-    BlocksRemaining = (UINT16) (BlocksRemaining - SectorCount);
+    Lba32           += SectorCount;
+    PtrBuffer        = (UINT8 *) PtrBuffer + (SectorCount * BlockSize);
+    BlocksRemaining -= SectorCount;
   }
 
   return Status;
