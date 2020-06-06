@@ -1892,9 +1892,10 @@ OpalGetFeatureDescriptor (
 
     *DataSize = Size;
     CopyMem (Data, Feat, Size);
+    return TcgResultSuccess;
   }
 
-  return TcgResultSuccess;
+  return TcgResultFailure;
 }
 
 /**
