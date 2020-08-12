@@ -91,6 +91,14 @@ AhciPassThruExecute (
 {
   EFI_STATUS    Status;
 
+  if (PortMultiplierPort == 0xFFFF) {
+    //
+    // If there is no port multiplier, PortMultiplierPort will be 0xFFFF
+    // according to UEFI spec. Here, we convert its value to 0 to follow
+    // AHCI spec.
+    //
+    PortMultiplierPort = 0;
+  }
   switch (Packet->Protocol) {
     case EFI_ATA_PASS_THRU_PROTOCOL_ATA_NON_DATA:
       Status = AhciNonDataTransfer (
